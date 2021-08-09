@@ -21,7 +21,7 @@ Configure any other options if needed.
 Args take priority over the config file.
 
 Download two albums:   
-`idagio_dl_x64.exe https://app.idagio.com/albums/barber-adagio-for-strings-4937b163-2a55-426d-860a-ea47b418a738 `
+`idagio_dl_x64.exe https://app.idagio.com/albums/barber-adagio-for-strings-4937b163-2a55-426d-860a-ea47b418a738 https://app.idagio.com/albums/bruckner-symphony-no-3-in-d-minor-wab-103-wagner-1873-version-ed-l-nowak`
 
 Download a single album and from two text files:   
 `idagio_dl_x64.exe https://app.idagio.com/albums/barber-adagio-for-strings-4937b163-2a55-426d-860a-ea47b418a738 G:\1.txt G:\2.txt`
