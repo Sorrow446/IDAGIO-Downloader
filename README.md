@@ -1,6 +1,6 @@
 # IDAGIO-Downloader
 IDAGIO downloader written in Go.
-![](https://i.imgur.com/GW1IQla.png)
+![](https://i.imgur.com/Lk0Ms3J.png)
 [Windows binaries](https://github.com/Sorrow446/IDAGIO-Downloader/releases)
 
 # Setup
