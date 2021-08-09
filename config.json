@@ -1,0 +1,10 @@
+{
+    "email": "",
+    "password": "",
+    "format": 3,
+    "outPath": "Idagio downloads",
+    "trackTemplate": "{{.trackPad}}. {{.title}}",
+    "downloadBooklets": true,
+    "maxCoverSize": true,
+    "keepCover": true
+}
