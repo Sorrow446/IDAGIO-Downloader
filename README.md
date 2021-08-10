@@ -1,7 +1,7 @@
 # IDAGIO-Downloader
 IDAGIO downloader written in Go.
 ![](https://i.imgur.com/Lk0Ms3J.png)
-[Windows binaries](https://github.com/Sorrow446/IDAGIO-Downloader/releases)
+[Windows, Linux, macOS and Android binaries](https://github.com/Sorrow446/IDAGIO-Downloader/releases)
 
 # Setup
 Input credentials into config file.
@@ -32,7 +32,7 @@ Download a single album and from two text files:
 |-   -|  |  |     |  |  |-   -|  |  |  |  |  | . | | | |   | | . | .'| . | -_|  _|
 |_____|____/|__|__|_____|_____|_____|  |____/|___|_____|_|_|_|___|__,|___|___|_|
 
-Usage: main.exe [--format FORMAT] [--outpath OUTPATH] URLS [URLS ...]
+Usage: idagio_dl_x64.exe [--format FORMAT] [--outpath OUTPATH] URLS [URLS ...]
 
 Positional arguments:
   URLS
