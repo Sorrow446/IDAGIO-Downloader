@@ -275,12 +275,18 @@ func fileExists(path string) (bool, error) {
 	return false, err
 }
 
-func multiParticipants(meta []Participants) string {
-	var participants string
+func multiParticipants(meta []Participants) (string, string) {
+	var (
+		composer     string
+		participants string
+	)
 	for _, participant := range meta {
+		if participant.Type == "composer" {
+			composer = participant.Name
+		}
 		participants += participant.Name + ", "
 	}
-	return participants[:len(participants)-2]
+	return participants[:len(participants)-2], composer
 }
 
 func multiAuthors(meta []Authors) string {
@@ -291,11 +297,21 @@ func multiAuthors(meta []Authors) string {
 	return authors[:len(authors)-2]
 }
 
+func getComposer(meta []Participants) string {
+	for _, author := range meta {
+		if author.Type == "composer" {
+			return author.Name
+		}
+	}
+	return ""
+}
+
 func parseAlbumMeta(meta *AlbumMeta) map[string]string {
-	albumArtists := multiParticipants(meta.Result.Participants)
+	albumArtists, composer := multiParticipants(meta.Result.Participants)
 	parsedMeta := map[string]string{
 		"album":       meta.Result.Title,
 		"albumArtist": albumArtists,
+		"composer":    composer,
 		"copyright":   meta.Result.Copyright,
 		"upc":         meta.Result.UPC,
 		"year":        strings.Split(meta.Result.PublishDate, "-")[0],
@@ -465,7 +481,7 @@ func writeFlacTags(decTrackPath string, tags map[string]string, imgData []byte) 
 	f.Meta = append(f.Meta, &tagMeta)
 	if imgData != nil {
 		picture, err := flacpicture.NewFromImageData(
-			flacpicture.PictureTypeFrontCover, "Front cover", imgData, "image/jpeg",
+			flacpicture.PictureTypeFrontCover, "", imgData, "image/jpeg",
 		)
 		if err != nil {
 			return err
@@ -483,6 +499,7 @@ func writeMp3Tags(decTrackPath string, tags map[string]string, imgData []byte) e
 		"album":       "TALB",
 		"artist":      "TPE1",
 		"albumArtist": "TPE2",
+		"composer":    "TCOM",
 		"copyright":   "TCOP",
 		"genre":       "TCON",
 		"title":       "TIT2",
@@ -505,7 +522,6 @@ func writeMp3Tags(decTrackPath string, tags map[string]string, imgData []byte) e
 			Encoding:    id3v2.EncodingUTF8,
 			MimeType:    "image/jpeg",
 			PictureType: id3v2.PTFrontCover,
-			Description: "Front cover",
 			Picture:     imgData,
 		}
 		tag.AddAttachedPicture(imgFrame)
@@ -580,7 +596,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Signed in successfully - %s Plan.\n\n", plan)
+	fmt.Printf("Signed in successfully - %s plan.\n\n", plan)
 	err = makeDir(cfg.OutPath)
 	if err != nil {
 		errString := fmt.Sprintf("Failed to make output folder. %s", err)
@@ -601,10 +617,11 @@ func main() {
 			continue
 		}
 		parsedAlbMeta := parseAlbumMeta(meta)
-		albFolder := parsedAlbMeta["albumArtist"] + " - " + parsedAlbMeta["album"]
+		albFolder := parsedAlbMeta["composer"] + " - " + parsedAlbMeta["album"]
 		fmt.Println(albFolder)
-		if len(albFolder) > 150 {
-			albFolder = albFolder[:150]
+		if len(albFolder) > 120 {
+			fmt.Println("Album folder was chopped as it exceeds 120 characters.")
+			albFolder = albFolder[:120]
 		}
 		albumPath := filepath.Join(cfg.OutPath, sanitize(albFolder))
 		err = makeDir(albumPath)
