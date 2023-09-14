@@ -17,6 +17,7 @@ import (
 	"net/http/cookiejar"
 	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"runtime"
@@ -169,6 +170,13 @@ func parseCfg() (*Config, error) {
 	}
 	if cfg.OutPath == "" {
 		cfg.OutPath = "Idagio downloads"
+		// Use $HOME/Music if available
+		homeDir, _ := os.UserHomeDir()
+		musicPath := path.Join(homeDir, "Music")
+		if available, _ := isDirectory(musicPath); available {
+			cfg.OutPath = musicPath
+		}
+		fmt.Printf("Download path set: %s\n", cfg.OutPath)
 	}
 	cfg.Urls, err = processUrls(args.Urls)
 	if err != nil {
@@ -203,12 +211,15 @@ func auth(email, pwd string) (string, string, error) {
 		return "", "", errors.New(do.Status)
 	}
 	var obj Auth
+	if err != nil {
+		return "", "", err
+	}
 	err = json.NewDecoder(do.Body).Decode(&obj)
 	if err != nil {
 		return "", "", err
 	}
-	if !obj.User.Premium {
-		return "", "", errors.New("Subscription is required.")
+	if !strings.HasPrefix(obj.User.Plan, "Premium") {
+		return "", "", errors.New("User doesn't have a Premium plan.")
 	}
 	return obj.AccessToken, obj.User.PlanDisplayName, nil
 }
@@ -255,6 +266,15 @@ func checkUrl(url string) string {
 		return ""
 	}
 	return match[1]
+}
+
+func isDirectory(path string) (bool, error) {
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		return false, err
+	}
+
+	return fileInfo.IsDir(), err
 }
 
 func makeDir(path string) error {
